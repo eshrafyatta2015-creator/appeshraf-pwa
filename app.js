@@ -7,18 +7,18 @@ const CFG = {
   programsCSV: 'https://docs.google.com/spreadsheets/d/16Sw_4TjAM0fhYKicxyZE0EzGoT98ZnlMSxYKxU3ILLk/export?format=csv',
   formBase: 'https://docs.google.com/forms/d/1PbG2agJLSR50yK0k5LKaY9umi_1UlCfAraOB8BF-WOY/formResponse',
 
-  entrySupervisor: '1693725572',
+  entrySupervisor: 'entry.1693725572',
   entrySchool: {
-    sun: '1829173884', mon: '1461268196', tue: '2066013452',
-    wed: '1336415727', thu: '382860391', sat: '1194598788',
+    sun: 'entry.1829173884', mon: 'entry.1461268196', tue: 'entry.2066013452',
+    wed: 'entry.1336415727', thu: 'entry.382860391', sat: 'entry.1194598788',
   },
   entryActivity: {
-    sun: '336812853', mon: '1907752307', tue: '1339851092',
-    wed: '458079306', thu: '1861795443', sat: '785934006',
+    sun: 'entry.336812853', mon: 'entry.1907752307', tue: 'entry.1339851092',
+    wed: 'entry.458079306', thu: 'entry.1861795443', sat: 'entry.785934006',
   },
-  entryNotes: '1329670988',
-  entryCode: '1840616412',
-  entryType: '1627151443',
+  entryNotes: 'entry.1329670988',
+  entryCode: 'entry.1840616412',
+  entryType: 'entry.1627151443',
 
   phSupervisor: 'اسم المشرف',
   phSchool: 'اسم المدرسة',
@@ -352,8 +352,10 @@ async function save() {
   const url = buildSubmitUrl();
   state.submitting = true;
   renderSaveBtn();
+  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timer = ctrl ? setTimeout(() => ctrl.abort(), 20000) : null;
   try {
-    await fetch(url, { mode: 'no-cors', cache: 'no-store', credentials: 'omit' });
+    await fetch(url, { mode: 'no-cors', cache: 'no-store', credentials: 'omit', signal: ctrl ? ctrl.signal : undefined });
     setStatus(CFG.status.saved);
     resetForm();
     rememberSupervisor();
@@ -364,6 +366,7 @@ async function save() {
     setStatus(messageFor(e));
     postAlert(state.status);
   } finally {
+    if (timer) clearTimeout(timer);
     state.submitting = false;
     renderSaveBtn();
   }

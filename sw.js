@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE = 'appeshraf-pwa-v1';
+const CACHE = 'appeshraf-pwa-v2';
 const SHELL = [
   './',
   'index.html',
@@ -29,6 +29,18 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+function networkFirst(req) {
+  return fetch(req)
+    .then((resp) => {
+      if (resp && resp.ok) {
+        const copy = resp.clone();
+        caches.open(CACHE).then((cache) => cache.put(req, copy));
+      }
+      return resp;
+    })
+    .catch(() => caches.match(req));
+}
+
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
@@ -36,32 +48,13 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url);
 
   if (url.origin === self.location.origin) {
-    event.respondWith(
-      caches.match(req, { ignoreSearch: false }).then((cached) => {
-        const network = fetch(req)
-          .then((resp) => {
-            if (resp && resp.ok) {
-              const copy = resp.clone();
-              caches.open(CACHE).then((cache) => cache.put(req, copy));
-            }
-            return resp;
-          })
-          .catch(() => cached);
-        return cached || network;
-      })
-    );
+    event.respondWith(networkFirst(req));
     return;
   }
 
-  if (url.hostname.endsWith('googleusercontent.com') || url.hostname === 'docs.google.com') {
-    event.respondWith(
-      fetch(req)
-        .then((resp) => {
-          const copy = resp.clone();
-          caches.open(CACHE).then((cache) => cache.put(req, copy));
-          return resp;
-        })
-        .catch(() => caches.match(req))
-    );
+  const isCsv = (url.hostname === 'docs.google.com' && url.pathname.indexOf('/export') !== -1)
+    || url.hostname.endsWith('googleusercontent.com');
+  if (isCsv) {
+    event.respondWith(networkFirst(req));
   }
 });
