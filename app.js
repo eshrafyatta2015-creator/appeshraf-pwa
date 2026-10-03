@@ -55,7 +55,7 @@ const CFG = {
     searchStart: '🔍 جارٍ البحث...',
     noResults: 'لا توجد نتائج مطابقة للبحث',
     foundResults: '✓ تم العثور على النتائج',
-    saved: '✓ تم حفظ البرنامج بنجاح',
+    saved: '✓ تم ارسال البرنامج بنجاح',
     supervisorPicked: '✓ تم اختيار المشرف',
     schoolPicked: '✓ تم اختيار المدرسة',
     activityPicked: '✓ تم اختيار الفعالية',
@@ -71,7 +71,7 @@ const CFG = {
     alreadyPlanned: '⚠ تم ارسال برنامج التخطيط سابقا',
     doubleSent: '⚠ تم ارسال البرنامج مرتين يرجى مراجعة القسم',
     offline: '⚠ لا يوجد اتصال بالإنترنت، حاول مرة أخرى.',
-    generic: '⚠ حدث خطأ أثناء الحفظ، حاول مرة أخرى.',
+    generic: '⚠ حدث خطأ أثناء الارسال، حاول مرة أخرى.',
   },
 };
 
@@ -479,7 +479,7 @@ function renderType() { $('type').value = state.type; }
 function renderSaveBtn() {
   const b = $('btn-save');
   b.disabled = state.submitting;
-  b.textContent = state.submitting ? '…' : '✓ حفظ البرنامج';
+  b.textContent = state.submitting ? '…' : '✓ ارسال البرنامج';
 }
 
 function renderResults() {
